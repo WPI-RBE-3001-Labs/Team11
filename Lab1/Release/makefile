@@ -31,56 +31,56 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 LSS += \
-A16_Example.lss \
+Lab1.lss \
 
 FLASH_IMAGE += \
-A16_Example.hex \
+Lab1.hex \
 
 EEPROM_IMAGE += \
-A16_Example.eep \
+Lab1.eep \
 
 SIZEDUMMY += \
 sizedummy \
 
 
 # All Target
-all: A16_Example.elf secondary-outputs
+all: Lab1.elf secondary-outputs
 
 # Tool invocations
-A16_Example.elf: $(OBJS) $(USER_OBJS)
+Lab1.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: AVR C Linker'
-	avr-gcc -Wl,-Map,A16_Example.map -Wl,-u,vfprintf -lprintf_flt -lm -L"R:\RBE3001workspace\RBELib\Release" -mmcu=atmega644p -o "A16_Example.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	avr-gcc -Wl,-Map,Lab1.map -Wl,-u,vfprintf -lprintf_flt -lm -L"R:\RBE3001workspace\RBELib\Release" -mmcu=atmega644p -o "Lab1.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-A16_Example.lss: A16_Example.elf
+Lab1.lss: Lab1.elf
 	@echo 'Invoking: AVR Create Extended Listing'
-	-avr-objdump -h -S A16_Example.elf  >"A16_Example.lss"
+	-avr-objdump -h -S Lab1.elf  >"Lab1.lss"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-A16_Example.hex: A16_Example.elf
+Lab1.hex: Lab1.elf
 	@echo 'Create Flash image (ihex format)'
-	-avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex A16_Example.elf  "A16_Example.hex"
+	-avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex Lab1.elf  "Lab1.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-A16_Example.eep: A16_Example.elf
+Lab1.eep: Lab1.elf
 	@echo 'Create eeprom image (ihex format)'
-	-avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex A16_Example.elf  "A16_Example.eep"
+	-avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex Lab1.elf  "Lab1.eep"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-sizedummy: A16_Example.elf
+sizedummy: Lab1.elf
 	@echo 'Invoking: Print Size'
-	-avr-size --format=avr --mcu=atmega644p A16_Example.elf
+	-avr-size --format=avr --mcu=atmega644p Lab1.elf
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(FLASH_IMAGE)$(ELFS)$(OBJS)$(ASM_DEPS)$(EEPROM_IMAGE)$(S_DEPS)$(SIZEDUMMY)$(S_UPPER_DEPS)$(LSS)$(C_DEPS) A16_Example.elf
+	-$(RM) $(FLASH_IMAGE)$(ELFS)$(OBJS)$(ASM_DEPS)$(EEPROM_IMAGE)$(S_DEPS)$(SIZEDUMMY)$(S_UPPER_DEPS)$(LSS)$(C_DEPS) Lab1.elf
 	-@echo ' '
 
 secondary-outputs: $(LSS) $(FLASH_IMAGE) $(EEPROM_IMAGE) $(SIZEDUMMY)

@@ -15,129 +15,157 @@ int lowADC = 0;
 int highADC=1023;
 
 #define BIT(n) (1 << (n))
+void writeMotor0(int pwr);
 
-unsigned long timer = 0;
-int polling = 0;
-int tim2count = 0;
-int toggle = 0; //used to generate pwm signal
-int state = 0;
-unsigned int steps = 36000; //number used as TOP for timer1, (18432000/512)/freq
-int freq = 1;
-unsigned int posSteps = 0;
+int timerCounts = 0;
+
+int setpoint = 60;
+double kP;
+double kI;
+double kD;
+int pos;
+int lastE;
+int totalE;
+
 int main(void)
 {
 	  //Enable printf() and setServo()
 	  initRBELib();
-	  DDRA = 0x00;
-	  DDRB = 0xFF;
-	  DDRC = 0x00;
 	  sei();
 
 	  // Write the USARTDebug.c file using the function prototypes in the H file to enable the usart
 	  //Set the baud rate of the UART
 	  debugUSARTInit(230400);
-	  ADMUX = (1<<REFS0) | 0x4;
+	  //Part 1 code
+//	  ADMUX = (1<<REFS0) | 0x3;
+//	  ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN);
+
+	  //Part 2 code
+	  initSPI();
+//	  int value = 0;
+//	  int direction = 1;
+	  writeMotor0(0);
+	  ADMUX = (1<<REFS0);
 	  ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN);
 
-	  TCCR0B = (1<<CS00) | (1<<CS02);
+	  TCCR0A = BIT(WGM01);
+	  TCCR0B = BIT(CS02) | BIT(CS00);
+	  OCR0A = 0xB4; //180 ticks for 100 Hz clock
 
-	  TCCR1B = (1<<CS12) | BIT(WGM13); //set clock 1 in phase and freq correct mode and clock divider to 256
-	  TCCR1A = BIT(WGM10);
+	  //Part 3 code
 
-	  TCCR2B = BIT(CS22) | BIT(CS21);
+	  getCharDebug();
 
-	  OCR1AH = steps>>8;  //set the TOP for clock 1 to 36000d for 1 Hz clk
-	  OCR1AL = steps & 0xF;
-
-	  inchar = getCharDebug(); //wait for any serial message
-	  TIMSK0 = (1<<TOIE0); //enable clk0 interrupt
-	  TIMSK1 = (1<<OCIE1B) | BIT(OCIE1A) | BIT(TOIE1); //enable clk1 interrupts for changing toggle and updating signal
+	  TIMSK0 = BIT(OCIE0A);
 
 	  while(1){
-		  if(!polling){
-			  ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN) | (1<<ADSC); //start conversion
-			  while(ADCSRA &(1<<ADSC)); //check for conversion finish
-			  int val = 0;
-			  val += ADCL;
-			  val += (ADCH << 8);
-			  float percent = val/1023.0;
-			  int mV = (percent)*5000;
-			  int deg =(percent)*300;
-//			  printf("%lu, %i, %i, %i\r\n",timer, val,mV,deg);
-			  printf("%i %%, %i Hz, %u, %i\r\n",(int)(percent*100),freq,state,val);
+		  //Part 1 code
+//		  ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN) | (1<<ADSC); //start conversion
+//		  while(ADCSRA &(1<<ADSC)); //check for conversion finish
+//		  int val = 0;
+//		  val += ADCL;
+//		  val += (ADCH << 8);
+//		  float percent = val/1023.0;
+//		  int mV = percent*5000;
+//		  int degrees = percent*240;
+//		  printf("%i, %i, %i\r\n",val,mV,degrees);
 
+		  //Part 2 code
+//		  setDAC(0,value);
+//		  setDAC(1,4095-value);
+//		  if(direction) value+=5;
+//		  if(!direction) value-=5;
+//		  if(value > 4094) direction = 0;
+//		  if(value<1)direction = 1;
+//		  printf("%i, %i\r\n",direction, value);
 
-			  posSteps = (percent)*steps;
-			  //assure that the signal toggles every output by keeping OCR1B from being TOP or BOTTOM
-			  if(posSteps == 0)posSteps++;
-			  if(posSteps == steps)posSteps--;
-
-			  OCR1BH = posSteps>>8; //set the OCR1B compare register to the TOP value scaled by the pot to cause output change
-			  OCR1BL = posSteps & 0xF;
-
-			  unsigned char inputs = PINC;
-			  if(!(inputs & BIT(7))){
-				  TCCR1B = (1<<CS12) | BIT(WGM13);
-				  steps = 36000;
-				  freq = 1;
-				  OCR1AH = steps>>8;  //set the TOP for clock 1 to 36000d for 1 Hz clk
-				  OCR1AL = steps & 0xF;
-			  }else if(!(inputs & BIT(6))){
-				  TCCR1B = (1<<CS12) | BIT(WGM13);
-				  steps = 1800;
-				  freq = 20;
-				  OCR1AH = steps>>8;  //set the TOP for clock 1 to 1800d for 20 Hz clk
-				  OCR1AL = steps & 0xF;
-			  }else if(!(inputs & BIT(5))){
-				  TCCR1B = BIT(CS11) | BIT(CS10) | BIT(WGM13);
-				  steps = 1440;
-				  freq = 100;
-				  OCR1AH = steps>>8;  //set the TOP for clock 1 to 1440d for 100 Hz clk
-				  OCR1AL = steps & 0xF;
-			  }else if(!(inputs &BIT(4))){
-				  polling  = 1;
-				  ADMUX = (1<<REFS0) | 0x5;
-				  TIMSK2 = BIT(TOIE2);
-			  }
-		  }
+		  //part 3 code
+//		  if(direction) value+=5;
+//		  if(!direction) value-=5;
+//		  if(value > 4090) direction = 0;
+//		  if(value< -4090)direction = 1;
+//		  writeMotor0(value);
+//		  ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN) | (1<<ADSC); //start conversion
+//		  while(ADCSRA &(1<<ADSC)); //check for conversion finish
+//		  int val = 0;
+//		  val += ADCL;
+//		  val += (ADCH << 8);
+//		  printf("%i\r\n",val);
 	  }
 }
 
-ISR(TIMER0_OVF_vect){
-	timer++;
-}
+ISR(TIMER0_COMPA_vect){
+	//read angle pot
+	ADMUX = (1<<REFS0) | 0x2;
+	ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN) | (1<<ADSC); //start conversion
+	while(ADCSRA &(1<<ADSC)); //check for conversion finish
+	pos = 0;
+	pos += ADCL;
+	pos += (ADCH<< 8);
+	pos = (pos/1023.0)*240;
+	int error = pos-setpoint;
 
-ISR(TIMER1_OVF_vect){
-	toggle = 1;
-}
+	//read kP pot
+	ADMUX = (1<<REFS0) | 0x4;
+	ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN) | (1<<ADSC); //start conversion
+	while(ADCSRA &(1<<ADSC)); //check for conversion finish
+	kP = 0;
+	kP += ADCL;
+	kP += (ADCH << 8);
+	kP = (kP/1023.0)*500;
 
-ISR(TIMER1_COMPA_vect){
-	toggle = 0;
-}
+	//read kI pot
+	ADMUX = (1<<REFS0) | 0x5;
+	ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN) | (1<<ADSC); //start conversion
+	while(ADCSRA &(1<<ADSC)); //check for conversion finish
+	kI = 0;
+	kI += ADCL;
+	kI += (ADCH << 8);
+	kI = (kI/1023.0)*1;
 
-ISR(TIMER1_COMPB_vect){
-	if(toggle){
-		PORTB = !BIT(0) & BIT(0);
-		state = 0;
-	}else{
-		PORTB = BIT(0);
-		state = 1;
+	//read kD pot
+	ADMUX = (1<<REFS0) | 0x6;
+	ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN) | (1<<ADSC); //start conversion
+	while(ADCSRA &(1<<ADSC)); //check for conversion finish
+	kD = 0;
+	kD += ADCL;
+	kD += (ADCH << 8);
+	kD = (kD/1023.0)*10;
+
+	int driveVal = kP*error + kI*totalE + kD*(error-lastE);
+
+	writeMotor0(driveVal);
+
+
+	ADMUX = (1<<REFS0);
+	ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN) | (1<<ADSC); //start conversion
+	while(ADCSRA &(1<<ADSC)); //check for conversion finish
+	int current = 0;
+	current += ADCL;
+	current += (ADCH << 8);
+
+	printf("%i, %i, %i, %i, %f, %f, %f\r\n",driveVal,setpoint,pos,current,kP,kI,kD);
+
+	totalE+=error;
+	lastE = error;
+
+	timerCounts++;
+	if(timerCounts>500){
+//		setpoint = 150;
+//		timerCounts = 0;   //make the arm repeat oscillation
+	}else if(timerCounts>250){
+		setpoint = 120;
 	}
 }
 
-ISR(TIMER2_OVF_vect){
-	tim2count++;
-	PORTB = BIT(0);
-	ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN) | (1<<ADSC); //start conversion
-	while(ADCSRA &(1<<ADSC)); //check for conversion finish
-	int val = 0;
-	val += ADCL;
-	val += (ADCH << 8);
-//	printf("%i, %i\r\n",tim2count,val);
-	PORTB = !BIT(0) & BIT(0);
-	if(tim2count > 225){
-		tim2count = 0;
-		polling = 0;
-		TIMSK2 = 0x00; //turn off timer interrupt
+void writeMotor0(int pwr){
+	if(pwr>4095)pwr = 4095;
+	if(pwr<-4095)pwr = -4095;
+	if(pwr>0){
+	  setDAC(1,0);
+	  setDAC(0,pwr);
+	}else{
+	  setDAC(0,0);
+	  setDAC(1,-pwr);
 	}
 }
