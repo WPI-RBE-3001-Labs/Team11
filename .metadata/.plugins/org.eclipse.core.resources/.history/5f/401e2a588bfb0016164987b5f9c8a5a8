@@ -1,0 +1,17 @@
+#include "RBELib/RBELib.h"
+
+void initADC(int channel){
+
+}
+
+void changeADC(int channel){
+
+}
+
+void clearADC(int channel){
+
+}
+
+unsigned short getADC(int channel){
+
+}

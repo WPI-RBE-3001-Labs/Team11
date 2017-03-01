@@ -1,0 +1,16 @@
+#include "RBELib/RBELib.h"
+
+void initADC(int channel){
+	ADMUX = (1<<REFS0) | (channel & 0x1F);
+	ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN);
+}
+
+unsigned short getADC(int channel){
+	ADMUX = (1<<REFS0) | (channel & 0x1F);
+	ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN) | (1<<ADSC); //start conversion
+	while(ADCSRA &(1<<ADSC)); //check for conversion finish
+	int val = 0;
+	val += ADCL;
+	val += (ADCH << 8);
+	return val;
+}

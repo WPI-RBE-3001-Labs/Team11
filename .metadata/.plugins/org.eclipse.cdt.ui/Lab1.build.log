@@ -1,0 +1,37 @@
+10:57:57 **** Build of configuration Release for project Lab1 ****
+make all 
+Building target: Lab1.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,Lab1.map -Wl,-u,vfprintf -lprintf_flt -lm -L"R:\RBE3001workspace\RBELib\Release" -mmcu=atmega644p -o "Lab1.elf"  ./SRC/USART.o ./SRC/main.o   -lRBELib -lm
+Finished building target: Lab1.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S Lab1.elf  >"Lab1.lss"
+Finished building: Lab1.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex Lab1.elf  "Lab1.hex"
+Finished building: Lab1.hex
+ 
+Create eeprom image (ihex format)
+avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex Lab1.elf  "Lab1.eep"
+Finished building: Lab1.eep
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega644p Lab1.elf
+AVR Memory Usage
+----------------
+Device: atmega644p
+
+Program:    5414 bytes (8.3% Full)
+(.text + .data + .bootloader)
+
+Data:         87 bytes (2.1% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+10:57:58 Build Finished (took 879ms)
+

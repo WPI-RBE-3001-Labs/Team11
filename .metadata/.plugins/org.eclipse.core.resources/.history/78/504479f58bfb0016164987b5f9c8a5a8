@@ -1,0 +1,18 @@
+#include "RBELib/RBELib.h"
+
+void initADC(int channel){
+	ADMUX = (1<<REFS0) | (channel & 0x1F);
+	ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN);
+}
+
+void changeADC(int channel){
+
+}
+
+void clearADC(int channel){
+
+}
+
+unsigned short getADC(int channel){
+
+}

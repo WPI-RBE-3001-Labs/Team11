@@ -17,8 +17,11 @@ int highADC=1023;
 #define BIT(n) (1 << (n))
 void writeMotor0(int pwr);
 void writeMotor1(int pwr);
+int EncoderCounts(int __chan);
+int GetAccelerationH48C(int __axis);
 
 int timerCounts = 0;
+int powerVal = 4000;
 
 int setpoint1 = 90;
 double kP1 = 150;
@@ -44,32 +47,35 @@ int main(void)
 
 	  // Write the USARTDebug.c file using the function prototypes in the H file to enable the usart
 	  //Set the baud rate of the UART
-	  debugUSARTInit(230400);
+//	  debugUSARTInit(230400);
 
 	  initSPI();
-	  writeMotor0(0);
+	  writeMotor0(2000);
 	  writeMotor1(0);
-	  ADMUX = (1<<REFS0);
-	  ADCSRA = (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2) | (1<<ADEN);
 
 	  TCCR0A = BIT(WGM01);
 	  TCCR0B = BIT(CS02) | BIT(CS00);
 	  OCR0A = 0xB4; //180 ticks for 100 Hz clock
 
-
-	  DDRC = 0x00;
-	  PORTC = 0xFF;
-
-
-	  getCharDebug();
+//	  getCharDebug();
 
 	  TIMSK0 = BIT(OCIE0A);
 
-	  while(1);
+	  while(1){
+//		  unsigned char inputs = PINC;
+//		  if(!(inputs & BIT(7))){
+//			  powerVal = 0;
+//		  }else if(!(inputs & BIT(6))){
+//			  powerVal = 1517;
+//		  }else if(!(inputs & BIT(5))){
+//			  powerVal = -1517;
+//		  }else if(!(inputs &BIT(4))){
+//			  powerVal = 3034;
+//		  }
+	  }
 }
 
 ISR(TIMER0_COMPA_vect){
-
 }
 
 void writeMotor0(int pwr){
@@ -95,3 +101,42 @@ void writeMotor1(int pwr){
 	  setDAC(2,-pwr);
 	}
 }
+int EncoderCounts(int __chan){
+	int val = 0;
+	switch(__chan){
+	case 0:
+		PORTC &= ~(1<<PC5);
+		val = spiTransceive(0xFF);
+		PORTC |= (1<<PC4) || (1<<PC5);
+		return val;
+	case 1:
+		PORTC &= ~(1<< PC4);
+		val = spiTransceive(0xFF);
+		PORTC |= (1<<PC4) || (1<<PC5);
+		return val;
+	default:
+		return -1;
+	}
+}
+
+//int GetAccelerationH48C(int __axis){
+//	int val = 0;
+//	PORTD &= ~(1<<PD1);
+//	spiTransceive(0b0110);
+//	switch(__axis){
+//	case 0:
+//		val = (spiTransceive(0b1000)) <<8;
+//		val |= spiTransceive(0x00);
+//		break;
+//	case 1:
+//		val = (spiTransceive(0b1001)) <<8;
+//		val |= spiTransceive(0x00);
+//		break;
+//	case 2:
+//			val = (spiTransceive(0b1010)) <<8;
+//			val |= spiTransceive(0x00);
+//			break;
+//	}
+//	PORTD |= (1<<PD1);
+//	return val;
+//}

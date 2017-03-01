@@ -1,0 +1,18 @@
+#include "RBELib/RBELib.h"
+
+void initTimer(int timer, int mode, unsigned int comp){
+	switch(timer){
+	case 0:
+		TCCR0A = (mode==NORMAL)?0:(1<< WGM01);
+		TCCR0B = (1<<CS02) | (1<<CS00);
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	}
+}
+
+void setCompValue(unsigned char timer, unsigned short int comp){
+
+}

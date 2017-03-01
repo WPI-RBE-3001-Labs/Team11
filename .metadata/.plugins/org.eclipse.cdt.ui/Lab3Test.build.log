@@ -1,0 +1,47 @@
+23:10:58 **** Incremental Build of configuration Release for project Lab3Test ****
+make all 
+Building file: ../SRC/main.c
+Invoking: AVR Compiler
+avr-gcc -I"R:\RBE3001workspace\RBELib\include" -Wall -Os -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega644p -DF_CPU=18432000UL -MMD -MP -MF"SRC/main.d" -MT"SRC/main.d" -c -o "SRC/main.o" "../SRC/main.c"
+../SRC/main.c: In function 'EncoderCounts':
+../SRC/main.c:135: warning: left shift count >= width of type
+../SRC/main.c:136: warning: left shift count >= width of type
+../SRC/main.c:144: warning: left shift count >= width of type
+../SRC/main.c:145: warning: left shift count >= width of type
+Finished building: ../SRC/main.c
+ 
+Building target: Lab3Test.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,Lab3Test.map -Wl,-u,vfprintf -lprintf_flt -lm -L"R:\RBE3001workspace\RBELib\Release" -mmcu=atmega644p -o "Lab3Test.elf"  ./SRC/USART.o ./SRC/main.o   -lRBELib -lm
+Finished building target: Lab3Test.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S Lab3Test.elf  >"Lab3Test.lss"
+Finished building: Lab3Test.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex Lab3Test.elf  "Lab3Test.hex"
+Finished building: Lab3Test.hex
+ 
+Create eeprom image (ihex format)
+avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex Lab3Test.elf  "Lab3Test.eep"
+Finished building: Lab3Test.eep
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega644p Lab3Test.elf
+AVR Memory Usage
+----------------
+Device: atmega644p
+
+Program:    4442 bytes (6.8% Full)
+(.text + .data + .bootloader)
+
+Data:         95 bytes (2.3% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+23:11:00 Build Finished (took 2s.70ms)
+

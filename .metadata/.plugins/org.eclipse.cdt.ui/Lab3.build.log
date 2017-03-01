@@ -1,0 +1,42 @@
+20:44:45 **** Incremental Build of configuration Release for project Lab3 ****
+make all 
+Building file: ../SRC/main.c
+Invoking: AVR Compiler
+avr-gcc -I"R:\RBE3001workspace\RBELib\include" -Wall -Os -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega644p -DF_CPU=18432000UL -MMD -MP -MF"SRC/main.d" -MT"SRC/main.d" -c -o "SRC/main.o" "../SRC/main.c"
+Finished building: ../SRC/main.c
+ 
+Building target: Lab3.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,Lab3.map -Wl,-u,vfprintf -lprintf_flt -lm -L"R:\RBE3001workspace\RBELib\Release" -mmcu=atmega644p -o "Lab3.elf"  ./SRC/USART.o ./SRC/main.o   -lRBELib -lm
+Finished building target: Lab3.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S Lab3.elf  >"Lab3.lss"
+Finished building: Lab3.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex Lab3.elf  "Lab3.hex"
+Finished building: Lab3.hex
+ 
+Create eeprom image (ihex format)
+avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex Lab3.elf  "Lab3.eep"
+Finished building: Lab3.eep
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega644p Lab3.elf
+AVR Memory Usage
+----------------
+Device: atmega644p
+
+Program:    4058 bytes (6.2% Full)
+(.text + .data + .bootloader)
+
+Data:         89 bytes (2.2% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+20:44:47 Build Finished (took 1s.965ms)
+

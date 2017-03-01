@@ -1,8 +1,8 @@
 avrdude/configs/programmerconfig.1/baudrate=
 avrdude/configs/programmerconfig.1/description=Default AVRDude Programmer Configuration. Modify as required for your setup.
-avrdude/configs/programmerconfig.1/name=rbe3001 com49
+avrdude/configs/programmerconfig.1/name=rbe3001 com90
 avrdude/configs/programmerconfig.1/otherOptions=
-avrdude/configs/programmerconfig.1/port=COM49
+avrdude/configs/programmerconfig.1/port=COM90
 avrdude/configs/programmerconfig.1/postAvrdudeDelayMs=
 avrdude/configs/programmerconfig.1/ppresetline=
 avrdude/configs/programmerconfig.1/ppvccline=

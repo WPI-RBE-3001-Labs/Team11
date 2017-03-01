@@ -30,11 +30,12 @@ unsigned char getCharDebug(void) {
 }
 
 void initSPI(){
-	DDRB = (1<<DDB5) | (1<<DDB7) | (1<<DDB4);
-	DDRD = (1<<DDD4);
-	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPI2X);
-	PORTD = (1<<4);
-	PORTB = (1<<DDB4);
+	DDRB |= (1<<DDB5) | (1<<DDB7) | (1<<DDB4);
+	DDRD |= (1<<DDD1) || (1<<DDD3) || (1<<DDD7);
+	SPCR |= (1<<SPE)|(1<<MSTR)|(1<<SPI2X);
+	PORTD |= (1<<4);
+	PORTB |= (1<<PB4);
+	PORTC |= (1<<PC4);
 
 	setDAC(4,0);
 
@@ -47,12 +48,13 @@ unsigned char spiTransceive (BYTE data){
 }
 
 void setDAC(int DACn, int SPIVal){
-	PORTD = 0;
+	PORTD &= ~(1<<PD4);
 	BYTE control = (0x2 << 4) | (DACn);
 	spiTransceive(control);
 	BYTE low = SPIVal & 0x000F;
 	BYTE high = SPIVal >> 4;
 	spiTransceive(high);
 	spiTransceive(low);
-	PORTD = (1<<4);
+	PORTD |= (1<<PD4);
 }
+

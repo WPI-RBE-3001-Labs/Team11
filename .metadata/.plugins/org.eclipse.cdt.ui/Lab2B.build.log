@@ -1,0 +1,47 @@
+21:31:32 **** Incremental Build of configuration Release for project Lab2B ****
+make all 
+Building file: ../SRC/USART.c
+Invoking: AVR Compiler
+avr-gcc -I"R:\RBE3001workspace\RBELib\include" -Wall -Os -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega644p -DF_CPU=18432000UL -MMD -MP -MF"SRC/USART.d" -MT"SRC/USART.d" -c -o "SRC/USART.o" "../SRC/USART.c"
+Finished building: ../SRC/USART.c
+ 
+Building file: ../SRC/main.c
+Invoking: AVR Compiler
+avr-gcc -I"R:\RBE3001workspace\RBELib\include" -Wall -Os -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega644p -DF_CPU=18432000UL -MMD -MP -MF"SRC/main.d" -MT"SRC/main.d" -c -o "SRC/main.o" "../SRC/main.c"
+Finished building: ../SRC/main.c
+ 
+Building target: Lab2B.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,Lab2B.map -Wl,-u,vfprintf -lprintf_flt -lm -L"R:\RBE3001workspace\RBELib\Release" -mmcu=atmega644p -o "Lab2B.elf"  ./SRC/USART.o ./SRC/main.o   -lRBELib -lm
+Finished building target: Lab2B.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S Lab2B.elf  >"Lab2B.lss"
+Finished building: Lab2B.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex Lab2B.elf  "Lab2B.hex"
+Finished building: Lab2B.hex
+ 
+Create eeprom image (ihex format)
+avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex Lab2B.elf  "Lab2B.eep"
+Finished building: Lab2B.eep
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega644p Lab2B.elf
+AVR Memory Usage
+----------------
+Device: atmega644p
+
+Program:    6172 bytes (9.4% Full)
+(.text + .data + .bootloader)
+
+Data:        103 bytes (2.5% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+21:31:35 Build Finished (took 2s.567ms)
+

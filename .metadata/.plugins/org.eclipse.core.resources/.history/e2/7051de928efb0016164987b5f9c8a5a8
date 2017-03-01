@@ -1,0 +1,9 @@
+#include "RBELib/RBELib.h"
+
+void initTimer(int timer, int mode, unsigned int comp){
+
+}
+
+void setCompValue(unsigned char timer, unsigned short int comp){
+
+}

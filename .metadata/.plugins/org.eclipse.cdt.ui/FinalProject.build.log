@@ -1,0 +1,42 @@
+15:48:28 **** Incremental Build of configuration Release for project FinalProject ****
+make all 
+Building file: ../SRC/main.c
+Invoking: AVR Compiler
+avr-gcc -I"R:\RBE3001workspace\RBELib\include" -Wall -Os -fpack-struct -fshort-enums -ffunction-sections -fdata-sections -std=gnu99 -funsigned-char -funsigned-bitfields -mmcu=atmega644p -DF_CPU=18432000UL -MMD -MP -MF"SRC/main.d" -MT"SRC/main.d" -c -o "SRC/main.o" "../SRC/main.c"
+Finished building: ../SRC/main.c
+ 
+Building target: FinalProject.elf
+Invoking: AVR C Linker
+avr-gcc -Wl,-Map,FinalProject.map -Wl,-u,vfprintf -lprintf_flt -lm -L"R:\RBE3001workspace\RBELib\Release" -mmcu=atmega644p -o "FinalProject.elf"  ./SRC/ADC.o ./SRC/DAC.o ./SRC/SPI.o ./SRC/USART.o ./SRC/main.o ./SRC/timer.o   -lRBELib -lm
+Finished building target: FinalProject.elf
+ 
+Invoking: AVR Create Extended Listing
+avr-objdump -h -S FinalProject.elf  >"FinalProject.lss"
+Finished building: FinalProject.lss
+ 
+Create Flash image (ihex format)
+avr-objcopy -R .eeprom -R .fuse -R .lock -R .signature -O ihex FinalProject.elf  "FinalProject.hex"
+Finished building: FinalProject.hex
+ 
+Create eeprom image (ihex format)
+avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex FinalProject.elf  "FinalProject.eep"
+Finished building: FinalProject.eep
+ 
+Invoking: Print Size
+avr-size --format=avr --mcu=atmega644p FinalProject.elf
+AVR Memory Usage
+----------------
+Device: atmega644p
+
+Program:    5954 bytes (9.1% Full)
+(.text + .data + .bootloader)
+
+Data:         89 bytes (2.2% Full)
+(.data + .bss + .noinit)
+
+
+Finished building: sizedummy
+ 
+
+15:48:30 Build Finished (took 1s.577ms)
+
